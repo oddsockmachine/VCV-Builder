@@ -1,3 +1,5 @@
+# TODO shebang
+
 from pprint import pprint
 from json import load, dump
 from sys import argv
@@ -179,7 +181,7 @@ if __name__ == "__main__":
     racks = [Rack(filename) for filename in input_filenames]
     starting_blocks = sum([rack.get_starting_blocks() for rack in racks], [])
     export_blocks = [Export_Block(starting_block) for starting_block in starting_blocks]
-    [export_block.normalize_pos(i).make_ids_unique(i)  for i, export_block in enumerate(export_blocks)]
+    [export_block.normalize_pos(i).make_ids_unique(i) for i, export_block in enumerate(export_blocks)]
 
     output  = {
         "version": "1.1.5",
