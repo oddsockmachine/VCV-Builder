@@ -48,7 +48,6 @@ A little bit of hacky Python, which is gradually growing into a larger VCV-focus
 
 [[TODO_example.png]]
 
-
 ## Tips
 
 #### Blocks can be defined within normally functioning patches
@@ -58,7 +57,8 @@ Just leave a small gap where you want the Block to end to avoid importing extran
 
 [[TODO_example.png]]
 
-#### External cables are ignored, but you can add a buffer module to your Block for convenient ins/outs when patching
+#### External buffers
+External cables are ignored, but you can add a buffer module to your Block for convenient ins/outs when patching
 
 [[TODO_example.png]]
 

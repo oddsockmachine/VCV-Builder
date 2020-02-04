@@ -1,5 +1,6 @@
 from pprint import pprint
 from json import load, dump
+from sys import argv
 import logging
 logging.basicConfig(filename='vcv.log', level=logging.DEBUG, format='(%(threadName)-10s) %(message)s')
 debug = logging.debug
@@ -142,7 +143,7 @@ class Export_Block(object):
         start_x = self.starting_block.x
         for module in self.modules:
             module.update_pos(module.x-start_x, y)
-        return
+        return self
 
     def make_ids_unique(self, y):
         cable_counter = 0
@@ -157,7 +158,7 @@ class Export_Block(object):
             cable.update_module_id(self.module_id_mapping)
             cable_id = (y*1000) + j
             cable.update_cable_id(cable_id)
-        return
+        return self
 
     def output_modules(self):
         return [m.raw_data for m in self.modules]
@@ -173,26 +174,18 @@ class Export_Block(object):
         return list(cables)
 
 
+if __name__ == "__main__":    
+    input_filenames = argv[1:]
+    racks = [Rack(filename) for filename in input_filenames]
+    starting_blocks = sum([rack.get_starting_blocks() for rack in racks], [])
+    export_blocks = [Export_Block(starting_block) for starting_block in starting_blocks]
+    [export_block.normalize_pos(i).make_ids_unique(i)  for i, export_block in enumerate(export_blocks)]
 
-input_filenames = ['./example1.vcv', './example3.vcv.first.third.second']
-racks = [Rack(filename) for filename in input_filenames]
-starting_blocks = sum([rack.get_starting_blocks() for rack in racks], [])
-export_blocks = [Export_Block(starting_block) for starting_block in starting_blocks]
-for i, export_block in enumerate(export_blocks):
-    export_block.normalize_pos(i)
-    export_block.make_ids_unique(i)
+    output  = {
+        "version": "1.1.5",
+        "modules": sum([export_block.output_modules() for export_block in export_blocks], []),
+        "cables": sum([export_block.output_cables() for export_block in export_blocks], []),
+        }
 
-output  = {
-  "version": "1.1.5",
-  "modules": [],
-  "cables": []
-}
-
-for export_block in export_blocks:
-    for module in export_block.output_modules():
-        output['modules'].append(module)
-    for cable in export_block.output_cables():
-        output['cables'].append(cable)
-
-with open('test.vcv', 'w') as output_file:
-    dump(output, output_file, indent=2)
+    with open('test.vcv', 'w') as output_file:
+        dump(output, output_file, indent=2)
